@@ -2,11 +2,11 @@ package es
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/gin-gonic/gin/json"
 	"go.uber.org/zap"
 )
 
@@ -56,23 +56,38 @@ func CreateClient(cfg Config) *Client {
 }
 
 // Get uses HTTP Get method to retrieve data from elasticsearch
+// returns a byte array that may be used to unmarshal into a
+// specific type depending on the returned code.
 func (es *Client) Get(url string) (int, []byte, error) {
 	return es.req(http.MethodGet, url, []byte{})
 }
 
 // Put uses HTTP Put method to send data to elasticsearch
-func (es *Client) Put(url string, data []byte) (int, []byte, error) {
-	return es.req(http.MethodPut, url, data)
+func (es *Client) Put(url string, data []byte) (int, Result, error) {
+	resObj := Result{}
+
+	code, res, err := es.req(http.MethodPut, url, data)
+	if err != nil {
+		return code, resObj, err
+	}
+
+	err = json.Unmarshal(res, &resObj)
+	if err != nil {
+		es.Log.Error("Error unmarshaling result object.", zap.Error(err))
+		return 0, resObj, err
+	}
+
+	return code, resObj, nil
 }
 
-func (es *Client) PutObj(url string, dataObj interface{}) (int, []byte, error) {
+func (es *Client) PutObj(url string, dataObj interface{}) (int, Result, error) {
 	data, err := json.Marshal(dataObj)
 	if err != nil {
 		es.Log.Error("Error marshaling object to json.", zap.Error(err))
-		return 0, nil, err
+		return 0, Result{}, err
 	}
 
-	return es.req(http.MethodPut, url, data)
+	return es.Put(url, data)
 }
 
 func (es *Client) req(method string, url string, data []byte) (int, []byte, error) {

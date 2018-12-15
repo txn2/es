@@ -116,7 +116,7 @@ func (es *Client) PostObj(url string, dataObj interface{}) (int, Result, error) 
 
 // PostObjUnmarshal Unmarshals results to retObj, likely
 // a overridden es.SearchResults struct
-func (es *Client) PostObjUnmarshal(url string, dataObj interface{}, retObj *interface{}) (int, error) {
+func (es *Client) PostObjUnmarshal(url string, dataObj interface{}, retObj interface{}) (int, error) {
 	data, err := json.Marshal(dataObj)
 	if err != nil {
 		es.Log.Error("Error marshaling object to json.", zap.Error(err))

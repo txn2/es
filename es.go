@@ -10,18 +10,28 @@ import (
 	"go.uber.org/zap"
 )
 
-type EsObj map[string]interface{}
+type Obj map[string]interface{}
 
 type Result struct {
-	Index  string `json:"_index"`
-	Type   string `json:"_type"`
-	Id     string `json:"_id"`
-	Source EsObj  `json:"_source"`
+	Index      string `json:"_index"`
+	Type       string `json:"_type"`
+	Id         string `json:"_id"`
+	Version    int    `json:"_version"`
+	ResultType string `json:"result"`
+	Found      bool   `json:"found"`
+	Shards     struct {
+		Total      int `json:"total"`
+		Successful int `json:"successful"`
+		Failed     int `json:"failed"`
+	} `json:"_shards"`
+	SeqNo       int `json:"_seq_no"`
+	PrimaryTerm int `json:"_primary_term"`
+	Source      Obj `json:"_source"`
 }
 
 type IndexTemplate struct {
 	Name     string
-	Template EsObj
+	Template Obj
 }
 
 type Config struct {

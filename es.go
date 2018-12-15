@@ -121,7 +121,7 @@ func (es *Client) req(method string, url string, data []byte) (int, []byte, erro
 		return 0, nil, err
 	}
 
-	if method == http.MethodPut {
+	if method == http.MethodPut || method == http.MethodPost {
 		req.Header.Set("Content-Type", "application/json")
 	}
 

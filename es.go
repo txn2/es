@@ -66,9 +66,40 @@ func (es *Client) Get(url string) (int, []byte, error) {
 
 // Put uses HTTP Put method to send data to elasticsearch
 func (es *Client) Put(url string, data []byte) (int, Result, error) {
+	return es.reqRes(url, data, http.MethodPut)
+}
+
+// Post uses HTTP POST method to send data to elasticsearch
+func (es *Client) Post(url string, data []byte) (int, Result, error) {
+	return es.reqRes(url, data, http.MethodPost)
+}
+
+// PutObj Marshals and object into json and PUTs it to Elasticsearch
+func (es *Client) PutObj(url string, dataObj interface{}) (int, Result, error) {
+	data, err := json.Marshal(dataObj)
+	if err != nil {
+		es.Log.Error("Error marshaling object to json.", zap.Error(err))
+		return 0, Result{}, err
+	}
+
+	return es.Put(url, data)
+}
+
+// PostObj Marshals and object into json and POSTs it to Elasticsearch
+func (es *Client) PostObj(url string, dataObj interface{}) (int, Result, error) {
+	data, err := json.Marshal(dataObj)
+	if err != nil {
+		es.Log.Error("Error marshaling object to json.", zap.Error(err))
+		return 0, Result{}, err
+	}
+
+	return es.Post(url, data)
+}
+
+func (es *Client) reqRes(url string, data []byte, method string) (int, Result, error) {
 	resObj := Result{}
 
-	code, res, err := es.req(http.MethodPut, url, data)
+	code, res, err := es.req(method, url, data)
 	if err != nil {
 		return code, resObj, err
 	}
@@ -80,16 +111,6 @@ func (es *Client) Put(url string, data []byte) (int, Result, error) {
 	}
 
 	return code, resObj, nil
-}
-
-func (es *Client) PutObj(url string, dataObj interface{}) (int, Result, error) {
-	data, err := json.Marshal(dataObj)
-	if err != nil {
-		es.Log.Error("Error marshaling object to json.", zap.Error(err))
-		return 0, Result{}, err
-	}
-
-	return es.Put(url, data)
 }
 
 func (es *Client) req(method string, url string, data []byte) (int, []byte, error) {

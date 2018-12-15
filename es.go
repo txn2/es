@@ -24,9 +24,11 @@ type Result struct {
 		Successful int `json:"successful"`
 		Failed     int `json:"failed"`
 	} `json:"_shards"`
-	SeqNo       int `json:"_seq_no"`
-	PrimaryTerm int `json:"_primary_term"`
-	Source      Obj `json:"_source"`
+	SeqNo       int    `json:"_seq_no"`
+	PrimaryTerm int    `json:"_primary_term"`
+	Source      Obj    `json:"_source"`
+	Error       string `json:"error"`
+	Status      int    `json:"status"`
 }
 
 type IndexTemplate struct {

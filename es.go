@@ -42,7 +42,7 @@ type SearchResults struct {
 	} `json:"_shards"`
 	Hits struct {
 		Total    int      `json:"total"`
-		MaxScore int      `json:"max_score"`
+		MaxScore float64  `json:"max_score"`
 		Hits     []Result `json:"hits"`
 	} `json:"hits"`
 	Error  string `json:"error"`

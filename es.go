@@ -133,6 +133,8 @@ func (es *Client) PostObjUnmarshal(url string, dataObj interface{}, retObj inter
 		es.Log.Error("Error unmarshaling result object.", zap.Error(err))
 		return 0, err
 	}
+
+	return code, err
 }
 
 func (es *Client) reqRes(url string, data []byte, method string) (int, Result, error) {

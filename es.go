@@ -31,6 +31,24 @@ type Result struct {
 	Status      int    `json:"status"`
 }
 
+type SearchResults struct {
+	Took     int  `json:"took"`
+	TimedOut bool `json:"timed_out"`
+	Shards   struct {
+		Total      int `json:"total"`
+		Successful int `json:"successful"`
+		Skipped    int `json:"skipped"`
+		Failed     int `json:"failed"`
+	} `json:"_shards"`
+	Hits struct {
+		Total    int      `json:"total"`
+		MaxScore int      `json:"max_score"`
+		Hits     []Result `json:"hits"`
+	} `json:"hits"`
+	Error  string `json:"error"`
+	Status int    `json:"status"`
+}
+
 type IndexTemplate struct {
 	Name     string
 	Template Obj
@@ -94,6 +112,27 @@ func (es *Client) PostObj(url string, dataObj interface{}) (int, Result, error) 
 	}
 
 	return es.Post(url, data)
+}
+
+// PostObjUnmarshal Unmarshals results to retObj, likely
+// a overridden es.SearchResults struct
+func (es *Client) PostObjUnmarshal(url string, dataObj interface{}, retObj *interface{}) (int, error) {
+	data, err := json.Marshal(dataObj)
+	if err != nil {
+		es.Log.Error("Error marshaling object to json.", zap.Error(err))
+		return 0, err
+	}
+
+	code, res, err := es.req(http.MethodPost, url, data)
+	if err != nil {
+		return code, err
+	}
+
+	err = json.Unmarshal(res, retObj)
+	if err != nil {
+		es.Log.Error("Error unmarshaling result object.", zap.Error(err))
+		return 0, err
+	}
 }
 
 func (es *Client) reqRes(url string, data []byte, method string) (int, Result, error) {

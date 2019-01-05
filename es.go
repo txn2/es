@@ -26,7 +26,7 @@ type Result struct {
 	} `json:"_shards"`
 	SeqNo       int    `json:"_seq_no"`
 	PrimaryTerm int    `json:"_primary_term"`
-	Source      Obj    `json:"_source"`
+	Source      map[string]interface{} `json:"_source"`
 	Error       string `json:"error"`
 	Status      int    `json:"status"`
 }

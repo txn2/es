@@ -24,11 +24,17 @@ type Result struct {
 		Successful int `json:"successful"`
 		Failed     int `json:"failed"`
 	} `json:"_shards"`
-	SeqNo       int    `json:"_seq_no"`
-	PrimaryTerm int    `json:"_primary_term"`
+	SeqNo       int                    `json:"_seq_no"`
+	PrimaryTerm int                    `json:"_primary_term"`
 	Source      map[string]interface{} `json:"_source"`
-	Error       string `json:"error"`
-	Status      int    `json:"status"`
+	Error       string                 `json:"error"`
+	Status      int                    `json:"status"`
+}
+
+type HitsMeta struct {
+	Total    int      `json:"total"`
+	MaxScore float64  `json:"max_score"`
+	Hits     []Result `json:"hits"`
 }
 
 type SearchResults struct {
@@ -40,13 +46,9 @@ type SearchResults struct {
 		Skipped    int `json:"skipped"`
 		Failed     int `json:"failed"`
 	} `json:"_shards"`
-	Hits struct {
-		Total    int      `json:"total"`
-		MaxScore float64  `json:"max_score"`
-		Hits     []Result `json:"hits"`
-	} `json:"hits"`
-	Error  string `json:"error"`
-	Status int    `json:"status"`
+	Hits   HitsMeta `json:"hits"`
+	Error  string   `json:"error"`
+	Status int      `json:"status"`
 }
 
 type IndexTemplate struct {

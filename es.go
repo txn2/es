@@ -112,14 +112,14 @@ func (es *Client) PostObjUnmarshal(url string, dataObj interface{}, retObj inter
 }
 
 // SendEsMapping
-func (es *Client) SendEsMapping(mapping es.IndexTemplate) (int, es.Result, error) {
+func (es *Client) SendEsMapping(mapping IndexTemplate) (int, Result, error) {
 
 	es.Log.Info("Sending template",
 		zap.String("type", "SendEsMapping"),
 		zap.String("mapping", mapping.Name),
 	)
 
-	code, esResult, err := a.Elastic.PutObj(fmt.Sprintf("_template/%s", mapping.Name), mapping.Template)
+	code, esResult, err := es.PutObj(fmt.Sprintf("_template/%s", mapping.Name), mapping.Template)
 	if err != nil {
 		es.Log.Error("Got error sending template", zap.Error(err))
 		return code, esResult, err

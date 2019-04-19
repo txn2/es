@@ -12,12 +12,13 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
+*/
 package es
 
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -108,6 +109,28 @@ func (es *Client) PostObjUnmarshal(url string, dataObj interface{}, retObj inter
 	}
 
 	return code, err
+}
+
+// SendEsMapping
+func (es *Client) SendEsMapping(mapping es.IndexTemplate) (int, es.Result, error) {
+
+	es.Log.Info("Sending template",
+		zap.String("type", "SendEsMapping"),
+		zap.String("mapping", mapping.Name),
+	)
+
+	code, esResult, err := a.Elastic.PutObj(fmt.Sprintf("_template/%s", mapping.Name), mapping.Template)
+	if err != nil {
+		es.Log.Error("Got error sending template", zap.Error(err))
+		return code, esResult, err
+	}
+
+	if code != 200 {
+		es.Log.Error("Got code", zap.Int("code", code), zap.String("EsResult", esResult.ResultType))
+		return code, esResult, errors.New("Error setting up " + mapping.Name + " template, got code " + string(code))
+	}
+
+	return code, esResult, err
 }
 
 // reqRes

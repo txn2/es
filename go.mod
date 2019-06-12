@@ -1,4 +1,4 @@
-module github.com/txn2/es
+module github.com/txn2/es/v2
 
 go 1.12
 

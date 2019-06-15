@@ -133,7 +133,7 @@ func (es *Client) PostObjUnmarshal(url string, dataObj interface{}, retObj inter
 
 	code, res, err := es.req(http.MethodPost, url, data)
 	if err != nil {
-		return code, nil, err
+		return code, &ErrorResponse{Message: string(res)}, err
 	}
 
 	if code != 200 {
